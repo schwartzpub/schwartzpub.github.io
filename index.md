@@ -2,8 +2,7 @@
 layout: default
 ---
 
-<h2>Posts</h2>
-<ul style="list-style-type:square;">
+<ul style="list-style-type:none;">
   {% for post in site.posts %}
     <li>
 	  {{ post.excerpt }}
