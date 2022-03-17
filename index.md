@@ -1,7 +1,12 @@
 ---
 layout: default
 ---
+
+<ul style="list-style-type:none;">
   {% for post in site.posts %}
+    <li>
 	  {{ post.excerpt }}
-      <br />
+    </li>
+	<hr>
   {% endfor %}
+</ul>
