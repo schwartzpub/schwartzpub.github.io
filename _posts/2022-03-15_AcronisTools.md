@@ -1,3 +1,8 @@
+---
+layout: default
+title: Where is this Acronis partner??
+excerpt_separator: <!--more-->
+---
 # Where is this Acronis partner??
 
 ## The Problem
