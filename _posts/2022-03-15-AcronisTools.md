@@ -2,7 +2,6 @@
 layout: post
 title: Where is this Acronis partner??
 date: 2022-03-15
-read_time: 5
 toc: true
 excerpt_separator: <!--more-->
 ---
