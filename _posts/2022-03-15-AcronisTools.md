@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Where is this Acronis partner??
 date: 2022-03-15
 toc: true
