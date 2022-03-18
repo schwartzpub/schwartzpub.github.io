@@ -1,5 +1,4 @@
 title: The Schwartz Pub
-remote_theme: "mmistakes/minimal-mistakes@4.24.0"
 logo: /assets/img/logo.jpg
 description: This is a space where I can post about ideas and projects I am working on, both personally and professionally.
 markdown: kramdown
@@ -8,6 +7,3 @@ kramdown:
     syntax_highlighter_opts:
         block:
             line_numbers: true
-minimal_mistakes_skin: "dark"
-plugins:
-  - jekyll-remote-theme
