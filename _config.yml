@@ -1,29 +1,4 @@
 title: The Schwartz Pub
-remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+theme: jekyll-theme-minimal
 logo: /assets/img/logo.jpg
 description: This is a space where I can post about ideas and projects I am working on, both personally and professionally.
-
-markdown: kramdown
-kramdown:
-    highlighter: rouge
-    syntax_highlighter_opts:
-        block:
-            line_numbers: true
-
-minimal_mistakes_skin: "dark"
-
-defaults:
-  # _posts
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: post
-      #author_profile: true
-      #read_time: false
-      #comments: false
-      #share: false
-      #related: false
-      show_date: true
-      sidebar:
-        nav: "docs"
