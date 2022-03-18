@@ -8,7 +8,7 @@ excerpt_separator: <!--more-->
 # Where is this Acronis partner??
 
 ## The Problem
-It occurred to me recently that there was a pretty glaring issue with how large-scale companies interact with Acronis to manage and maintain Partner and Client tenants for backups and disaster recovery.  There is a limit on how many Partners or Clients an account can contain<!--more-->, and after that you have to start tacking on new accounts to accommodate the growth.  Since there isn't currently a supported way to combine these accounts, the onus is on the provider to come up with a way to organize and find the Partners and Clients in their respective tenants.  
+It occurred to me recently that there was a pretty glaring issue with how large-scale companies interact with Acronis to manage and maintain Partner and Client tenants for backups and disaster recovery.  There is a limit on how many Partners or Clients an account can contain, and after that you have to start tacking on new accounts to accommodate the growth.  Since there isn't currently a supported way to combine these accounts, the onus is on the provider to come up with a way to organize and find the Partners and Clients in their respective tenants.  
 
 This can lead to quite a headache when it comes to providing support as the number of accounts grows (think thousands of partners/clients across tens of Acronis accounts).  If you're documentation is up to date and well maintained, obviously this isn't a concern.  But we all know too well how often these knowledgebases are updated and maintained, leading to a very frustrating search for which tenant a particular client or partner resides in.
 
