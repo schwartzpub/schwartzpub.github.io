@@ -9,3 +9,5 @@ kramdown:
         block:
             line_numbers: true
 minimal_mistakes_skin: "dark"
+plugins:
+  - jekyll-remote-theme
