@@ -1,7 +1,12 @@
 ---
 ---
 
-@import "jekyll-theme-minimal";
+/* minimal mistakes */
+
+@charset "utf-8";
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+@import "minimal-mistakes"; // main partials
 
 a.sidebar_header {
     color: #202020
