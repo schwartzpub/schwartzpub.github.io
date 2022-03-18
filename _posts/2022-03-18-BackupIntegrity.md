@@ -42,20 +42,11 @@ $RestoreFileDefs = @(
 ```
 Here, I have defined two backups of fileservers.  I need to provide a number of parameters that will be used by the Veeam PowerShell cmdlets when restoring and verifying the data.
 
-> BackupName
-This is the name of the backup in Veeam.
-
-> RestorePoint
-This is the name of the restore point in the Veeam backup.
-
-> DestinationPath
-This is the destination where I will recover the data from backup that I want to test.
-
-> RestorePath
-This is the path of the files inside of the Veaam restore point that I want to test.
-
-> ProductionPath
-This is the path to the same files in production, to be used when testing integrity of the restored files.
+|**BackupName**|This is the name of the backup in Veeam.|
+|**RestorePoint**|This is the name of the restore point in the Veeam backup.|
+|**DestinationPath**|This is the destination where I will recover the data from backup that I want to test.|
+|**RestorePath**|This is the path of the files inside of the Veaam restore point that I want to test.|
+|**ProductionPath**|This is the path to the same files in production, to be used when testing integrity of the restored files.|
 
 ---
 
@@ -67,27 +58,22 @@ $RestoreDBDefs = @(
         BackupName = 'SQL01'; 
         Database = 'App01'; 
         StagingServer = 'BACKUP01'; 
-        DestinationPath = '\\backup01\automation\BackupRecovery\'; }
+        DestinationPath = '\\backup01\automation\BackupRecovery\'; 
+    }
 	[pscustomobject]@{ 
         Name = 'App02 Database'; 
         BackupName = 'SQL02'; 
         Database = 'App02'; 
         StagingServer = 'BACKUP01'; 
-        DestinationPath = '\\backup01\automation\BackupRecovery\'; }
+        DestinationPath = '\\backup01\automation\BackupRecovery\'; 
+    }
 )
 ```
 Here I have done a similar configuration for databases.  For this, we will supply another set of parameters that will be used with the Veeam cmdlets when recovering our data.
 
-> BackupName
-This is the name of the backup in Veeam.
-
-> Database
-This is the database to be recovered.
-
-> StagingServer
-This is the server we will use to stage the database during recovery.
-
-> Destinationpath
-This is the path we will store our recovered database.
+|**BackupName**|This is the name of the backup in Veeam.|
+|**Database**|This is the database to be recovered.|
+|**StagingServer**|This is the server we will use to stage the database during recovery.|
+|**Destinationpath**|This is the path we will store our recovered database.|
 
 ---
