@@ -11,3 +11,19 @@ kramdown:
             line_numbers: true
 
 minimal_mistakes_skin: "dark"
+
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      #author_profile: true
+      #read_time: false
+      #comments: false
+      #share: false
+      #related: false
+      show_date: true
+      sidebar:
+        nav: "docs"
