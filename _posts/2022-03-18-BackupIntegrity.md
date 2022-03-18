@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Automating Basic Veeam Backup Integrity Checking - Part 1
+title: Veeam Backup Integrity Checking - Part 1
 toc: true
 excerpt_separator: <!--more-->
 ---
