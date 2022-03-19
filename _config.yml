@@ -5,13 +5,15 @@ description: >-
 github_username: schwartzpub
 minimal_mistakes_skin: default
 search: true
-logo: "/assets/images/logo_red.png"
+logo: "/assets/images/logo_cropped.png"
 include:
   - _pages
 repository: schwartzpub/schwartzpub.github.io
 
 # Build settings
 markdown: kramdown
+kramdown:
+  highlighter: rouge
 remote_theme: mmistakes/minimal-mistakes
 
 # Outputting

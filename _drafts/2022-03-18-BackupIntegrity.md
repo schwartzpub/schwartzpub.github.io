@@ -11,7 +11,7 @@ toc: true
 In many companies, it is important (if not required) to perform regular testing of backups to ensure recoverability and integrity of data.  Often times this is a fairly manual process in which you recover partial or full datasets and run some checks to ensure the data is whole.  One tool that is useful is to have automated regular checks of your backups that can provide a minimum level of integrity checking to ensure that the data, for the most part, is complete and readable.  
 
 This problem becomes exponentially more time consuming when working with tens, hundreds, or thousands of file server backups, database backups, etc.  It would be nice to get a report each month that lets you know right away if there is a problem with data integrity that requires further investigation.
-<!--more-->
+
 ## The Solution
 For my purposes, I wanted to have a quick and automated way to check my fileserver and database backups were whole.  By making use of the built in PowerShell cmdlets provided by Veeam on machines with the [Veeam Backup & Replication Console installed](), we can easily create a scheduled task that will do some basic checks.
 
