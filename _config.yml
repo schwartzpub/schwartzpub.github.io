@@ -80,6 +80,6 @@ defaults:
 comments:
   provider: "utterances"
   utterances:
-    theme: "github-light" # "github-dark"
+    theme: "boxy-light"
     issue_term: "pathname"
-    #label: "comment" # Optional - must be existing label.
+    label: "comment"
