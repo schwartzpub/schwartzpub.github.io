@@ -5,6 +5,7 @@ categories:
 tags:
   - Jekyll
   - update
+toc: true
 ---
 ## The Problem
 In many companies, it is important (if not required) to perform regular testing of backups to ensure recoverability and integrity of data.  Often times this is a fairly manual process in which you recover partial or full datasets and run some checks to ensure the data is whole.  One tool that is useful is to have automated regular checks of your backups that can provide a minimum level of integrity checking to ensure that the data, for the most part, is complete and readable.  
