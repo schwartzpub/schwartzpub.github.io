@@ -1,8 +1,10 @@
 ---
-layout: post
 title: Where is this Acronis partner??
-toc: true
-excerpt_separator: <!--more-->
+categories:
+  - blog
+tags:
+  - Jekyll
+  - update
 ---
 ## The Problem
 It occurred to me recently that there was a pretty glaring issue with how large-scale companies interact with Acronis to manage and maintain Partner and Client tenants for backups and disaster recovery.  There is a limit on how many Partners or Clients an account can contain, and after that you have to start tacking on new accounts to accommodate the growth.  Since there isn't currently a supported way to combine these accounts, the onus is on the provider to come up with a way to organize and find the Partners and Clients in their respective tenants.  <!--more-->
