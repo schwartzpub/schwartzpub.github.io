@@ -6,6 +6,6 @@ layout: home
 author_profile: true
 sidebar:
     nav: posts
-title: Welcome to The Schwartz Pub
+title: The Schwartz Pub
 ---
-This is a blog where I will be posting about various thoughts, ideas, projects, and other life happenings.
+This is a blog where I will be posting about various thoughts, ideas, projects, and other life happenings. 
