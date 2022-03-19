@@ -4,12 +4,12 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: The Schwartz Pub
-email:
 description: >- # this means to ignore newlines until "baseurl:"
   This is a space where I can post about ideas and projects I am working on, both personally and professionally.
 github_username: schwartzpub
 minimal_mistakes_skin: default
 search: true
+logo: "/assets/images/logo_red.png"
 
 # Build settings
 markdown: kramdown
@@ -35,10 +35,11 @@ plugins:
   - jemoji
   - jekyll-include-cache
 
+# Author
 author:
-  name   : "The Schwartz Pub"
-  avatar : "/assets/images/logo.png"
-  bio    : "This is a space where I can post about ideas and projects I am working on, both personally and professionally."
+  name   : "Jacob Schwartz"
+  avatar : "/assets/images/portrait.png"
+  bio    : "An IT professional with over 10 years of experience in the finance industry working on a variety of infrastructure, cybersecurity, automation, and reporting solutions."
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
@@ -56,10 +57,11 @@ footer:
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/jacob-schwartz-a9337120/"
 
+# Defaults
 defaults:
   # _posts
   - scope:
-      path: ""
+      path: "_posts"
       type: posts
     values:
       layout: single
@@ -69,6 +71,8 @@ defaults:
       comments: true
       share: false
       related: false
+      sidebar:
+        nav: posts
   # _pages
   - scope:
       path: "_pages"
@@ -76,3 +80,5 @@ defaults:
     values:
       layout: single
       author_profile: true
+      sidebar:
+        nav: posts
