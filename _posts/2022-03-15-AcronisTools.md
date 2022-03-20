@@ -29,25 +29,53 @@ I then created a cmdlet: New-AcronisSecret.  This cmdlet will allow the user to 
 function New-AcronisSecret {
     [CmdletBinding()]
     param(
-        [Parameter(Position = 0, ValueFromPipeline = $true, Mandatory = $true)]
+        [Parameter(Position = 0, 
+            ValueFromPipeline = $true, 
+            Mandatory = $true)]
         [string]$Name,
-        [Parameter(Position = 1, ValueFromPipeline = $true, Mandatory = $true)]
+        [Parameter(Position = 1, 
+            ValueFromPipeline = $true, 
+            Mandatory = $true)]
         [string]$Vault,
-        [Parameter(Position = 2, ValueFromPipeline = $true, Mandatory = $true)]
+        [Parameter(Position = 2, 
+            ValueFromPipeline = $true, 
+            Mandatory = $true)]
         [string]$ClientID,
-        [Parameter(Position = 3, ValueFromPipeline = $true, Mandatory = $true)]
+        [Parameter(Position = 3, 
+            ValueFromPipeline = $true, 
+            Mandatory = $true)]
         [string]$ClientSecret,
-        [Parameter(Position = 4, ValueFromPipeline = $true, Mandatory = $true)]
+        [Parameter(Position = 4, 
+            ValueFromPipeline = $true, 
+            Mandatory = $true)]
         [string]$BaseUri
     )
 
     if (-not (Get-SecretVault -Name $Vault -ErrorAction SilentlyContinue)){
-        Write-Warning "Secret Vault ($($Vault)) does not exist. These are the secret vaults available: "
+        Write-Warning "Secret Vault ($($Vault)) does not exist. 
+            These are the secret vaults available: "
         Get-SecretVault
         return
     }
     else {
-        Set-Secret -Vault $Vault -Name $Name -Secret $ClientSecret -Metadata @{clientid=$ClientID;baseuri=$BaseUri}
+        if (-not (Get-SecretVault -Name $Vault -ErrorAction SilentlyContinue)){
+        Write-Warning "Secret Vault ($($Vault)) does not exist. 
+            These are the secret vaults available: "
+        Get-SecretVault
+        return
+    }
+    else {
+        $params = @{
+            Vault = $Vault
+            Name = $Name
+            Secret = $ClientSecret
+            Metadata = @{
+                clientid = $ClientID
+                baseuri = $BaseUri
+            }
+        }
+        
+        Set-Secret $params
     }
 }
 ```
