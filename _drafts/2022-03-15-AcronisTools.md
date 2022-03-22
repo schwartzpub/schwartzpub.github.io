@@ -74,7 +74,6 @@ function New-AcronisSecret {
                 baseuri = $BaseUri
             }
         }
-        
         Set-Secret $params
     }
 }
