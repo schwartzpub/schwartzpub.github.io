@@ -115,6 +115,10 @@ function Connect-BackupServer
 
 #### Mounting the Restore Point
 
+For my purposes, I have two main types of Veeam backups that I want to validate.  The first is File System -- basically Windows file shares.  The second is Databases -- in my case these are all MSSQL database backups.  In order to run the validation I will need to mount the restore points to access the backups for testing.  To do this I will use either [Get-VBRBackup](https://helpcenter.veeam.com/docs/backup/powershell/get-vbrbackup.html?ver=110) and [Start-VBRWindowsFileRestore](https://helpcenter.veeam.com/docs/backup/powershell/start-vbrwindowsfilerestore.html?ver=110) for file shares, or [Get-VBRApplicationRestorePoint](https://helpcenter.veeam.com/docs/backup/powershell/get-vbrapplicationrestorepoint.html?ver=110) and [Start-VESQLRestoreSession](https://helpcenter.veeam.com/docs/backup/explorers_powershell/start-vesqlrestoresession.html?ver=110) for databases.
+
+Using a simple function `Mount-RestorePoint` I can call a switch to determine which time of restore point I would like to mount, and pass in the appropriate paramaters from my configuration objects. 
+
 ```powershell
 function Mount-RestorePoint
 {
@@ -167,8 +171,22 @@ function Mount-RestorePoint
 }
 ```
 
-#### Validating File Level Restore
+|**BackupName**|This is the name of the backup in Veeam.|
+|**RestorePoint**|This is the restore point to be recovered.|
+|**BackupType**|This is the type of recovery, either `File` or `DB`.|
 
-#### Validating Database Restore
+If the restore type is `File` we will return the session using this command:
+```powershell
+$RestoreSession = Get-VBRBackup -Name $BackupName | Get-VBRRestorePoint -Name $RestorePoint | Sort-Object -Property CreationTime -Descending | Select-Object -First 1 | Start-VBRWindowsFileRestore -Reason "Backup Recovery Testing"
+```
+This command will get the backup (Get-VBRBackup), get the restore point (Get-VBRRestorePoint), select the most recent restore point, and then start a restore session (Start-VBRWindowsFIleRestore).
 
-#### Sending a Report
+If the restore type is 'DB' we will return the session using this command:
+```powershell
+$RestoreSession = Get-VBRApplicationRestorePoint -SQL -Name $BackupName | Sort -Property CreationTime -Descending | select -First 1 | Start-VESQLRestoreSession
+```
+This command will get the restorepoint from the backup (Get-VBRApplicationRestorePoint), select the most recent restore point, and then start a restore session (Start-VESQLRestoreSession).
+
+In each case, the appropriate session is stored in a variable and returned to the script.
+
+In Part 2 I will discuss how I validate each of these restore points and send a report with the results to the appropriate recipients.
