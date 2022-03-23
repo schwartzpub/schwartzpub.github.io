@@ -25,22 +25,22 @@ I've considered using external configuration files for scripts that require manu
 #File definitions
 $RestoreFileDefs = @(
 	[pscustomobject]@{ 
-        Name = 'FILESERVER01'; 
-        BackupName = 'FILESERVER01'; 
-        RestorePoint = 'FILESERVER01_RP'; 
-        DestinationPath = 'C:\Automation\BackupRecovery\'; 
-        RestorePath = '\DFS\SHARED\IT\Test Integrity\'; 
-        ProductionPath = '\\domain.com\share\IT\Test Integrity\'; 
+        Name = 'FILESERVER01'
+        BackupName = 'FILESERVER01'
+        RestorePoint = 'FILESERVER01_RP'
+        DestinationPath = 'C:\Automation\BackupRecovery\'
+        RestorePath = '\DFS\SHARED\IT\Test Integrity\'
+        ProductionPath = '\\domain.com\share\IT\Test Integrity\'
         FileIndex = ''; 
     }
 	[pscustomobject]@{ 
-        Name = 'FILESERVER02'; 
-        BackupName = 'FILESERVER02'; 
-        RestorePoint = 'FILESERVER02_RP'; 
-        DestinationPath = 'C:\Automation\BackupRecovery\'; 
-        RestorePath = '\Program Files (x86)\Test Integrity\'; 
-        ProductionPath = '\\domain.com\share\Test Integrity\'; 
-        FileIndex = ''; 
+        Name = 'FILESERVER02'
+        BackupName = 'FILESERVER02'
+        RestorePoint = 'FILESERVER02_RP'
+        DestinationPath = 'C:\Automation\BackupRecovery\'
+        RestorePath = '\Program Files (x86)\Test Integrity\' 
+        ProductionPath = '\\domain.com\share\Test Integrity\'
+        FileIndex = ''
     }
 )
 ```
@@ -58,18 +58,18 @@ Here, I have defined two backups of fileservers.  I need to provide a number of 
 #Database definitions
 $RestoreDBDefs = @(
 	[pscustomobject]@{ 
-        Name = 'App01 Database'; 
-        BackupName = 'SQL01'; 
-        Database = 'App01'; 
-        StagingServer = 'BACKUP01'; 
-        DestinationPath = '\\backup01\automation\BackupRecovery\'; 
+        Name = 'App01 Database'
+        BackupName = 'SQL01'
+        Database = 'App01'
+        StagingServer = 'BACKUP01'
+        DestinationPath = '\\backup01\automation\BackupRecovery\'
     }
 	[pscustomobject]@{ 
-        Name = 'App02 Database'; 
-        BackupName = 'SQL02'; 
-        Database = 'App02'; 
-        StagingServer = 'BACKUP01'; 
-        DestinationPath = '\\backup01\automation\BackupRecovery\'; 
+        Name = 'App02 Database'
+        BackupName = 'SQL02'
+        Database = 'App02'
+        StagingServer = 'BACKUP01'
+        DestinationPath = '\\backup01\automation\BackupRecovery\'
     }
 )
 ```
@@ -81,3 +81,94 @@ Here I have done a similar configuration for databases.  For this, we will suppl
 |**Destinationpath**|This is the path we will store our recovered database.|
 
 ---
+
+#### Connecting to Veeam
+
+Next I will need to connect to Veeam and return the connection object for use wit subsequent requests.  I will run this script under the context of a user with Veeam access so that I do not need to pass credentials when connecting to Veeam.
+
+I start by creating a function `Connect-BackupServer` which basically wraps the `Connect-VBRServer` command and returns the connection.  Using this function, I can also test for a successful connection to the VBR Server and handle an error if the connection fails.
+
+You will notice I also use a function called `LogWrite` which is a [helper function]() I created for use in many of my scripts to handle logging to file.  You could also use the [built-in transcript feature]() if you wanted a quick way to achieve the same effect.
+
+```powershell
+function Connect-BackupServer
+{
+	param
+	(
+		[string]$BackupServer = $BackupServer
+	)
+	LogWrite "[INFO] Connecting to $($BackupServer)"
+	try
+	{
+		#Connect to Veeam Backup and Replication server
+		$conn = Connect-VBRServer -Server $BackupServer
+	}
+	catch
+	{
+		LogWrite "[ERROR] Connecting to $($BackupServer)..." $_.InvocationInfo.ScriptLineNumber $_
+		exit
+	}
+	
+	return $conn
+}
+```
+
+#### Mounting the Restore Point
+
+```powershell
+function Mount-RestorePoint
+{
+	param (
+		[string]$BackupName = $BackupName,
+		[string]$RestorePoint = $RestorePoint,
+		[string]$BackupType = $BackupType
+	)
+	LogWrite "[INFO] Mounting Restore Point for $($BackupName)"
+	
+	switch ($BackupType) {
+		File {
+			try
+			{
+				#Get latest restore point for the backup and start a Windows File Restore session.
+				#We will keep the restore session alive until we have copied the required files to the Temp directory for hash comparison.
+				$RestoreSession = Get-VBRBackup -Name $BackupName | Get-VBRRestorePoint -Name $RestorePoint | Sort-Object -Property CreationTime -Descending | Select-Object -First 1 | Start-VBRWindowsFileRestore -Reason "Backup Recovery Testing"
+				return $RestoreSession
+			}
+			catch
+			{
+				LogWrite "[ERROR] Mounting restore point for $($BackupName)..." $_.InvocationInfo.ScriptLineNumber $_
+				
+				#If an error occurs while mounting the restore session, discard the server connection.
+				Disconnect-VBRServer
+				throw
+			}
+		}
+		DB {
+			try
+			{
+				#Get latest restore point for the backup and start a SQL Restore session.
+				#We will keep the restore session alive until we have expoted the database to the Temp directory for verification.
+				$RestoreSession = Get-VBRApplicationRestorePoint -SQL -Name $BackupName | Sort -Property CreationTime -Descending | select -First 1 | Start-VESQLRestoreSession
+				return $RestoreSession
+			}
+			catch
+			{
+				LogWrite "[ERROR] Mounting restore point for $($BackupName)..." $_.InvocationInfo.ScriptLineNumber $_
+				
+				#If an error occurs while mounting the restore session, discard the server connection.
+				Disconnect-VBRServer
+				throw
+			}
+		}
+		default {
+			#<code>
+		}
+	}
+}
+```
+
+#### Validating File Level Restore
+
+#### Validating Database Restore
+
+#### Sending a Report
