@@ -24,7 +24,7 @@ I've considered using external configuration files for scripts that require manu
 ```powershell
 #File definitions
 $RestoreFileDefs = @(
-	[pscustomobject]@{ 
+  [pscustomobject]@{ 
         Name = 'FILESERVER01'
         BackupName = 'FILESERVER01'
         RestorePoint = 'FILESERVER01_RP'
@@ -33,7 +33,7 @@ $RestoreFileDefs = @(
         ProductionPath = '\\domain.com\share\IT\Test Integrity\'
         FileIndex = ''; 
     }
-	[pscustomobject]@{ 
+  [pscustomobject]@{ 
         Name = 'FILESERVER02'
         BackupName = 'FILESERVER02'
         RestorePoint = 'FILESERVER02_RP'
@@ -57,14 +57,14 @@ Here, I have defined two backups of fileservers.  I need to provide a number of 
 ```powershell
 #Database definitions
 $RestoreDBDefs = @(
-	[pscustomobject]@{ 
+  [pscustomobject]@{ 
         Name = 'App01 Database'
         BackupName = 'SQL01'
         Database = 'App01'
         StagingServer = 'BACKUP01'
         DestinationPath = '\\backup01\automation\BackupRecovery\'
     }
-	[pscustomobject]@{ 
+  [pscustomobject]@{ 
         Name = 'App02 Database'
         BackupName = 'SQL02'
         Database = 'App02'
@@ -93,23 +93,23 @@ You will notice I also use a function called `LogWrite` which is a [helper funct
 ```powershell
 function Connect-BackupServer
 {
-	param
-	(
-		[string]$BackupServer = $BackupServer
-	)
-	LogWrite "[INFO] Connecting to $($BackupServer)"
-	try
-	{
-		#Connect to Veeam Backup and Replication server
-		$conn = Connect-VBRServer -Server $BackupServer
-	}
-	catch
-	{
-		LogWrite "[ERROR] Connecting to $($BackupServer)..." $_.InvocationInfo.ScriptLineNumber $_
-		exit
-	}
-	
-	return $conn
+  param
+  (
+    [string]$BackupServer = $BackupServer
+  )
+  LogWrite "[INFO] Connecting to $($BackupServer)"
+  try
+  {
+    #Connect to Veeam Backup and Replication server
+    $conn = Connect-VBRServer -Server $BackupServer
+  }
+  catch
+  {
+    LogWrite "[ERROR] Connecting to $($BackupServer)..." $_.InvocationInfo.ScriptLineNumber $_
+    exit
+  }
+  
+  return $conn
 }
 ```
 
@@ -122,52 +122,52 @@ Using a simple function `Mount-RestorePoint` I can call a switch to determine wh
 ```powershell
 function Mount-RestorePoint
 {
-	param (
-		[string]$BackupName = $BackupName,
-		[string]$RestorePoint = $RestorePoint,
-		[string]$BackupType = $BackupType
-	)
-	LogWrite "[INFO] Mounting Restore Point for $($BackupName)"
-	
-	switch ($BackupType) {
-		File {
-			try
-			{
-				#Get latest restore point for the backup and start a Windows File Restore session.
-				#We will keep the restore session alive until we have copied the required files to the Temp directory for hash comparison.
-				$RestoreSession = Get-VBRBackup -Name $BackupName | Get-VBRRestorePoint -Name $RestorePoint | Sort-Object -Property CreationTime -Descending | Select-Object -First 1 | Start-VBRWindowsFileRestore -Reason "Backup Recovery Testing"
-				return $RestoreSession
-			}
-			catch
-			{
-				LogWrite "[ERROR] Mounting restore point for $($BackupName)..." $_.InvocationInfo.ScriptLineNumber $_
-				
-				#If an error occurs while mounting the restore session, discard the server connection.
-				Disconnect-VBRServer
-				throw
-			}
-		}
-		DB {
-			try
-			{
-				#Get latest restore point for the backup and start a SQL Restore session.
-				#We will keep the restore session alive until we have expoted the database to the Temp directory for verification.
-				$RestoreSession = Get-VBRApplicationRestorePoint -SQL -Name $BackupName | Sort -Property CreationTime -Descending | select -First 1 | Start-VESQLRestoreSession
-				return $RestoreSession
-			}
-			catch
-			{
-				LogWrite "[ERROR] Mounting restore point for $($BackupName)..." $_.InvocationInfo.ScriptLineNumber $_
-				
-				#If an error occurs while mounting the restore session, discard the server connection.
-				Disconnect-VBRServer
-				throw
-			}
-		}
-		default {
-			#<code>
-		}
-	}
+  param (
+    [string]$BackupName = $BackupName,
+    [string]$RestorePoint = $RestorePoint,
+    [string]$BackupType = $BackupType
+  )
+  LogWrite "[INFO] Mounting Restore Point for $($BackupName)"
+  
+  switch ($BackupType) {
+    File {
+      try
+      {
+        #Get latest restore point for the backup and start a Windows File Restore session.
+        #We will keep the restore session alive until we have copied the required files to the Temp directory for hash comparison.
+        $RestoreSession = Get-VBRBackup -Name $BackupName | Get-VBRRestorePoint -Name $RestorePoint | Sort-Object -Property CreationTime -Descending | Select-Object -First 1 | Start-VBRWindowsFileRestore -Reason "Backup Recovery Testing"
+        return $RestoreSession
+      }
+      catch
+      {
+        LogWrite "[ERROR] Mounting restore point for $($BackupName)..." $_.InvocationInfo.ScriptLineNumber $_
+        
+        #If an error occurs while mounting the restore session, discard the server connection.
+        Disconnect-VBRServer
+        throw
+      }
+    }
+    DB {
+      try
+      {
+        #Get latest restore point for the backup and start a SQL Restore session.
+        #We will keep the restore session alive until we have expoted the database to the Temp directory for verification.
+        $RestoreSession = Get-VBRApplicationRestorePoint -SQL -Name $BackupName | Sort -Property CreationTime -Descending | select -First 1 | Start-VESQLRestoreSession
+        return $RestoreSession
+      }
+      catch
+      {
+        LogWrite "[ERROR] Mounting restore point for $($BackupName)..." $_.InvocationInfo.ScriptLineNumber $_
+        
+        #If an error occurs while mounting the restore session, discard the server connection.
+        Disconnect-VBRServer
+        throw
+      }
+    }
+    default {
+      #<code>
+    }
+  }
 }
 ```
 
