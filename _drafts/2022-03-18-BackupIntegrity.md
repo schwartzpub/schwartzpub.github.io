@@ -14,10 +14,10 @@ In many companies, it is important (if not required) to perform regular testing 
 This problem becomes exponentially more time consuming when working with tens, hundreds, or thousands of file server backups, database backups, etc.  It would be nice to get a report each month that lets you know right away if there is a problem with data integrity that requires further investigation.
 
 ## The Solution
-For my purposes, I wanted to have a quick and automated way to check my fileserver and database backups were whole.  By making use of the built in PowerShell cmdlets provided by Veeam on machines with the [Veeam Backup & Replication Console installed](), we can easily create a scheduled task that will do some basic checks.
+For my purposes, I wanted to have a quick and automated way to check my fileserver and database backups were whole.  By making use of the built in PowerShell cmdlets provided by Veeam on machines with the [Veeam Backup & Replication Console installed](https://helpcenter.veeam.com/docs/backup/hyperv/install_console.html?ver=110), we can easily create a scheduled task that will do some basic checks.
 
 ### The Setup
-I've considered using external configuration files for scripts that require manual configuration, but I have yet to find a solution that satisfies everything I'd like from a configuration file.  For this script, I opted to include the configuration parameters in the form of an array of [PSCustomObjects]().  There are a number of parameters I will need to know in order to check each item.
+I've considered using external configuration files for scripts that require manual configuration, but I have yet to find a solution that satisfies everything I'd like from a configuration file.  For this script, I opted to include the configuration parameters in the form of an array of [PSCustomObjects](https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-pscustomobject?view=powershell-7.2).  There are a number of parameters I will need to know in order to check each item.
 
 #### Integrity Testing Definitions
 
@@ -88,7 +88,7 @@ Next I will need to connect to Veeam and return the connection object for use wi
 
 I start by creating a function `Connect-BackupServer` which basically wraps the `Connect-VBRServer` command and returns the connection.  Using this function, I can also test for a successful connection to the VBR Server and handle an error if the connection fails.
 
-You will notice I also use a function called `LogWrite` which is a [helper function]() I created for use in many of my scripts to handle logging to file.  You could also use the [built-in transcript feature]() if you wanted a quick way to achieve the same effect.
+You will notice I also use a function called `LogWrite` which is a [helper function]() I created for use in many of my scripts to handle logging to file.  You could also use the [built-in transcript feature](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/wmf/whats-new/script-logging?view=powershell-7.2) if you wanted a quick way to achieve the same effect.
 
 ```powershell
 function Connect-BackupServer
