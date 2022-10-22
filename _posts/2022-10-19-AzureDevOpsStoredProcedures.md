@@ -8,14 +8,14 @@ tags:
 toc: true
 
 ---
-When coding and making changes, it is important to keep a history of changes that you can refer to whenever an unexpected breaking change is introduced that needs to be rolled back.  This also applies to SQL where changes to Stored Procedures, Views, and other objects in the database can result in unintended side effects down the road.  If we can place our SQL objects into git, then we can keep track of change history, approve changes to our production environment, and run tests to ensure the changes will not immediately break our workflows.
+When you're working with code, it is important to keep a history of changes that you can refer to whenever an unexpected breaking change is introduced that needs to be rolled back.  This also applies to SQL where changes to Stored Procedures, Views, and other objects in the database can result in unintended side effects down the road.  If we can place our SQL objects into git, then we can keep track of change history, approve changes to our production environment, and run tests to ensure the changes will not immediately break our workflows.
 
-In my case, it made sense to create a repository in Azure DevOps that would hold my SQL objects.  I didn't want to have to remind myself each time I made a change to a Stored Procedure that I also needed to make the change in the repo to store it, so I decided I would test my changes and then commit them to my repository where pipelines would pick up the changes and deploy them into production.  Using Azure DevOps pipelines, self hosted agents, and group managed service accounts (gMSA) this was a painless process.
+In my case, it made sense to create a repository in Azure DevOps that would hold my SQL objects.  I didn't want to have to remind myself each time I made a change to a Stored Procedure that Wealso needed to make the change in the repo to store it, so I decided I would test my changes and then commit them to my repository where pipelines would pick up the changes and deploy them into production.  Using Azure DevOps pipelines, self hosted agents, and group managed service accounts (gMSA) this was a painless process.
 
 ## Create Group Managed Service Account
 To start we want to create a [Group Managed Service Account (gMSA)](https://learn.microsoft.com/en-us/windows-server/security/group-managed-service-accounts/getting-started-with-group-managed-service-accounts) that will be used to run the Azure Agent.  This account will have just the permissions it needs in order to run the deployment, including creating and/or altering the tables and views in the database schema in production.
 
-You will want to have a group containing the hosts (computers) that you would like to access this gMSA.
+You'll want to create a group of computer objects that will utilize this gMSA.
 
 ![Server Group Screenshot](/assets/images/ServerGroupScreenshot.png)
 
@@ -32,16 +32,18 @@ Now we have a new gMSA we can use it for setting up the rest of our workflow.
 ## Add gMSA to SQL server 
 Add the gMSA to your SQL server and grant it the appropriate permissions to perform the workflows needed.
 
+In our case, we will add the `db_reader` role.
+
 Add a new user:
 
 ![Add gMSA to SQL 1](/assets/images/AddgMSAtoSQL_1.png)
 
-Permission:
+Set Permissions:
 
 ![Add gMSA to SQL 2](/assets/images/AddgMSAtoSQL_2.png)
 
 ## Add gMSA permissions to create and alter Stored Procedures and Schema
-Now we need to add the permissions on the database that will allow our gMSA to create and alter stored procedures on the schema.  We can do this by running the following query:
+Now we need to add the permissions on the database that will allow our gMSA to create and alter stored procedures on the schema.  The first permission `CREATE PROCEDURE` allows the account to create Stored Procedures, but does not tell the database where the account is allowed to create those objects, so we must also set the `ALTER SCHEMA` permission, which tells the database *where* the account is allowed to make those changes. We can do this by running the following query:
 
 ```sql
 GRANT CREATE PROCEDURE TO [SP\AzureDevOps$];
@@ -49,7 +51,7 @@ GRANT ALTER ON SCHEMA::AppUserCustom TO [SP\AzureDevOps$];
 ```
 
 ## Create Azure DevOps Repository
-We need a repository to store our files in within Azure DevOps.  I will not be going into the various security and management considerations that need to be applied when managing an Azure DevOps environment in this blog post, but there are a lot of resources available to do so.
+We need a repository to store our files in within Azure DevOps.  We will not be going into the various security and management considerations that need to be applied when managing an Azure DevOps environment in this blog post, but there are a lot of resources available to do so.
 
 Sign into your Azure DevOps environment and create a new project:
 
@@ -84,17 +86,19 @@ Additionally, we will create a folder called 'App01' that we will place our SQL 
 Now we have a basic scaffolding to use for storing our code and pipeline definitions.
 
 ## Create Azure DevOps Agent Pool
-The next step isn't strictly necessary, however I prefer to use a self hosted agent for my builds and deployments because it allows for better control of security, connectivity to on-premise resources, and other advantages.  I'll start by setting up an Agent Pool and creating a self hosted agent on one of my local servers.
+The next step isn't strictly necessary, however I prefer to use a self hosted agent for my builds and deployments because it allows for better control of security, connectivity to on-premise resources, and other advantages.  You will want to follow best pratices when deploying a self-hosted agent to ensure security of your environment. [Guidance from Microsoft on creating self-hosted agents can be found here](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/v2-windows?view=azure-devops).
 
-Start by going to `Project Settings > Agent Pools, and click 'Add pool'`
+We'll start by setting up an Agent Pool and creating a self hosted agent on one of our local servers.
+
+First, go to `Project Settings > Agent Pools, and click 'Add pool'`:
 
 ![Create Agent Pool Screenshot](/assets/images/CreateAgentPool.png)
 
 Open the new pool and select `'New agent'`. Download the agent and follow the instructions to add the new agent to your pool.
 
-I have downloaded the agent and extracted the contents of the zip file into a temp folder.
+Download the agent and extracted the contents of the zip file into a temp folder.
 
-In PowerShell I will run the config script to set up the agent:
+In PowerShell we will run the config script to set up the agent:
 
 ```powershell
 .\config.cmd
@@ -108,7 +112,7 @@ Then fill out the fields to generate an access token, be sure to save this in a 
 
 ![Generate Personal Access Token](/assets/images/PersonalAccessTokenCreate.png)
 
-Now you can fill out the rest of the prompts.  In the next step we will update the service to run using the gMSA we created eralier.
+Now you can fill out the rest of the prompts. You will need to provide the name of the Agent Pool we created in the previous step, as well as the name you want to give this agent.  You can leave the remaining fields s default. In the next step we will update the service to run using the gMSA we created earlier.
 
 ![Configure Agent Powershell](/assets/images/ConfigureAgentPosh.png)
 
@@ -129,7 +133,7 @@ Then save each object as a separate file in your repo.
 ![Save Stored Procedures](/assets/images/SaveScriptsToLocation.png)
 
 ## Modify Stored Procedures to ALTER instead of CREATE
-Since all of our exported procedures will have CREATE scripts, we will want to change these to ALTER, otherwise our pipelines later will fail. 
+Since all of our exported procedures will have CREATE scripts, we will want to change these to ALTER, otherwise our pipelines later will fail since these procedures will already exist in the database. 
 
 You can use FIND/REPLACE in VSCode or use PowerShell to do the same.
 
@@ -141,7 +145,7 @@ We are now ready to commit our stored procedure scripts into Azure DevOps.  Once
 
 ![Commit To AzureDevOps](/assets/images/CommitToRepo.png)
 
-## Create Template yaml using DACPAC task
+## Create Template YAML using DACPAC task
 
 The next step is to create our YAML template that will be used to create our pipeline that deploys our stored procedures into our database.  This is a pretty simple pipeline since it will be using our self hosted agent, running with our gMSA that now has permission to create and alter procedures in our database.
 
@@ -211,11 +215,13 @@ steps:
     AuthScheme: 'windowsAuthentication'
 ```
 
-## Powershell to generate yaml for each Stored Procedure
+## Powershell to generate YAML for each Stored Procedure
 
-Even though it was pretty simple to create this yaml file, what if we have several or even hundreds of stored procedures that we want to include?  Using a little bit of powershell and a 'template' yaml, we can quickly duplicate our pipeline files.
+Even though it was pretty simple to create this YAML file, what if we have several or even hundreds of stored procedures that we want to include?  Using a little bit of PowerShell and a 'template' YAML, we can quickly duplicate our pipeline files.
 
-Lets start by creating a temporary base.yml file that will make it easy to do a find and replace.  I will save this to C:\temp for now.:
+Lets start by creating a temporary base.yml file that will make it easy to do a find and replace.  We will save this to C:\temp for now.
+
+Change your file to include the `paths`, `pool name`, database `ServerName` and `DatabaseName` that you will use in your environment.
 
 ```yaml
 trigger:
@@ -254,15 +260,15 @@ foreach ($proc in $procs) {
 }
 ```
 
-Now lets commit these files to our repository so we can generate the pipelines using Az CLI.  If you followed along, you should now have your yaml files in your repo:
+Now lets commit these files to our repository so we can generate the pipelines using Az CLI.  If you followed along, you should now have your YAML files in your repo:
 
 ![Repo Yaml Files](/assets/images/RepositoryYaml.png)
 
-## AZ CLI to generate pipelines from yamls
+## Use AZ CLI to generate pipelines from YAMLs
 
 We now have all of the yml files we need in our repository but we need to create the pipelines that use these files.  We could go through these one by one in the Azure DevOps portal to create pipelines out of existing yml files, or we could take the easy route and loop over them in PowerShell and use Az CLI to generate the pipelines.
 
-This small script takes all of our yml files from our local repo and loops over each one, creating a new pipeline from each one.  You will need to replace the various fields in your script with the relevant locations and names from your environment.  Don't forget to log into azure first `az login` or `az devops login`
+This small script takes all of our yml files from our local repo and loops over each one, creating a new pipeline from each one.  You will need to replace the various fields in your script with the relevant locations and names from your environment.  Don't forget to log into Azure first using `az login` or `az devops login`:
 
 |**organization**|This is the url of your Azure DevOps environment.|
 |**repository**|This is the name of your repository.|
@@ -287,7 +293,7 @@ Now that we have our pipelines, we are ready to test!
 
 ## Test pull request of Stored Procedure update
 
-If everything is configured correclty, we can now test out our new pipelines by making some changes to one of our stored procedures and committing those changes to the Azure DevOps repository.  I will add a comment to one of the Stored Procedures I exported earlier, and commit that change to the repo.
+If everything is configured correclty, we can now test out our new pipelines by making some changes to one of our stored procedures and committing those changes to the Azure DevOps repository.  We will add a comment to one of the Stored Procedures we exported earlier, and commit that change to the repo.
 
 ![Test Comment](/assets/images/TestComment.png)
 
