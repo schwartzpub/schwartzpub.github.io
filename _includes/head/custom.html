@@ -4,3 +4,6 @@
 <link rel="manifest" href="/assets/favicon/site.webmanifest">
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="theme-color" content="#ffffff">
+{% if page.ogimage %}
+    <meta property="og:image" content="{{ site.url }}/assets/images/{{ page.ogimage }}"/>
+{% endif %}
