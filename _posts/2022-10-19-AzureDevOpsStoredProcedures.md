@@ -8,6 +8,11 @@ tags:
 toc: true
 
 ---
+<meta property="og:url" content="{{site.url}}/blog/AzureDevOpsStoredProcedures/"/>
+<meta property="og:title" content="SQL Version Control Using Azure DevOps"/>
+<meta property="og:site_name" content="The Schwartz Pub"/>
+<meta property="og:image" content="{{site.url}}/assets/images/SqlRepository.png"/>
+
 When you're working with code, it is important to keep a history of changes that you can refer to whenever an unexpected breaking change is introduced that needs to be rolled back.  This also applies to SQL where changes to Stored Procedures, Views, and other objects in the database can result in unintended side effects down the road.  If we can place our SQL objects into git, then we can keep track of change history, approve changes to our production environment, and run tests to ensure the changes will not immediately break our workflows.
 
 In my case, it made sense to create a repository in Azure DevOps that would hold my SQL objects.  I didn't want to have to remind myself each time I made a change to a Stored Procedure that Wealso needed to make the change in the repo to store it, so I decided I would test my changes and then commit them to my repository where pipelines would pick up the changes and deploy them into production.  Using Azure DevOps pipelines, self hosted agents, and group managed service accounts (gMSA) this was a painless process.
@@ -308,7 +313,5 @@ Now when we check the Stored Procedure on the server, we see that the comment is
 ![Updated Stored Procedure](/assets/images/UpdatedStoredProcedure.png)
 
 ## Conclusion
-
-<meta content="{{site.url}}/assets/images/SqlRepository.png" property="og:image">
 
 From here, you can set up additional customizations, tests, and rules surrounding your workflow.  Adding newly created Stored Procedures, views, and other objects is just a matter of adding the new SQL files and a new pipeline following the same steps above.  If your database moves to a new server, it's a quick process of updating the pipelines to point deployments to the new server and adding the gMSA account with permissions to add the objects to the schema.  I hope you found this article helpful!
