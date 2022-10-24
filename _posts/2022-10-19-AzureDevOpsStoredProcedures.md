@@ -12,6 +12,8 @@ When you're working with code, it is important to keep a history of changes that
 
 In my case, it made sense to create a repository in Azure DevOps that would hold my SQL objects.  I didn't want to have to remind myself each time I made a change to a Stored Procedure that Wealso needed to make the change in the repo to store it, so I decided I would test my changes and then commit them to my repository where pipelines would pick up the changes and deploy them into production.  Using Azure DevOps pipelines, self hosted agents, and group managed service accounts (gMSA) this was a painless process.
 
+Another option would be using SSDT in Visual Studio to gain version control of your SQL objects. The method I use in this article worked better for my purposes in a set of large, vendor managed databases where I add my own customizations to a particular schema(s). Many people will prefer to use the SSDT approach, but this article just provides another option.
+
 ## Create Group Managed Service Account
 To start we want to create a [Group Managed Service Account (gMSA)](https://learn.microsoft.com/en-us/windows-server/security/group-managed-service-accounts/getting-started-with-group-managed-service-accounts) that will be used to run the Azure Agent.  This account will have just the permissions it needs in order to run the deployment, including creating and/or altering the tables and views in the database schema in production.
 
