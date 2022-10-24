@@ -8,16 +8,16 @@ tags:
 toc: true
 
 ---
-<meta property="og:url" content="{{site.url}}/blog/AzureDevOpsStoredProcedures/"/>
-<meta property="og:title" content="SQL Version Control Using Azure DevOps"/>
-<meta property="og:site_name" content="The Schwartz Pub"/>
-<meta property="og:image" content="{{site.url}}/assets/images/SqlRepository.png"/>
-
 When you're working with code, it is important to keep a history of changes that you can refer to whenever an unexpected breaking change is introduced that needs to be rolled back.  This also applies to SQL where changes to Stored Procedures, Views, and other objects in the database can result in unintended side effects down the road.  If we can place our SQL objects into git, then we can keep track of change history, approve changes to our production environment, and run tests to ensure the changes will not immediately break our workflows.
 
 In my case, it made sense to create a repository in Azure DevOps that would hold my SQL objects.  I didn't want to have to remind myself each time I made a change to a Stored Procedure that Wealso needed to make the change in the repo to store it, so I decided I would test my changes and then commit them to my repository where pipelines would pick up the changes and deploy them into production.  Using Azure DevOps pipelines, self hosted agents, and group managed service accounts (gMSA) this was a painless process.
 
 Another option would be using SSDT in Visual Studio to gain version control of your SQL objects. The method I use in this article worked better for my purposes in a set of large, vendor managed databases where I add my own customizations to a particular schema(s). Many people will prefer to use the SSDT approach, but this article just provides another option.
+
+<meta property="og:url" content="{{site.url}}/blog/AzureDevOpsStoredProcedures/"/>
+<meta property="og:title" content="SQL Version Control Using Azure DevOps"/>
+<meta property="og:site_name" content="The Schwartz Pub"/>
+<meta property="og:image" content="{{site.url}}/assets/images/SqlRepository.png"/>
 
 ## Create Group Managed Service Account
 To start we want to create a [Group Managed Service Account (gMSA)](https://learn.microsoft.com/en-us/windows-server/security/group-managed-service-accounts/getting-started-with-group-managed-service-accounts) that will be used to run the Azure Agent.  This account will have just the permissions it needs in order to run the deployment, including creating and/or altering the tables and views in the database schema in production.
