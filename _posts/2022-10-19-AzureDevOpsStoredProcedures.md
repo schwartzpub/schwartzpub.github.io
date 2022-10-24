@@ -306,3 +306,7 @@ We see that the pipeline begins to run shortly after the commit is complete, and
 Now when we check the Stored Procedure on the server, we see that the comment is there, and the updated stored procedure has been successfully deployed.
 
 ![Updated Stored Procedure](/assets/images/UpdatedStoredProcedure.png)
+
+## Conclusion
+
+From here, you can set up additional customizations, tests, and rules surrounding your workflow.  Adding newly created Stored Procedures, views, and other objects is just a matter of adding the new SQL files and a new pipeline following the same steps above.  If your database moves to a new server, it's a quick process of updating the pipelines to point deployments to the new server and adding the gMSA account with permissions to add the objects to the schema.  I hope you found this article helpful!
