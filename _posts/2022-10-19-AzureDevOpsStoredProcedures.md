@@ -6,7 +6,7 @@ tags:
   - Jekyll
   - update
 toc: true
-ogimage: SqlRepository.jpg
+ogimage: SqlRepository.png
 
 ---
 When you're working with code, it is important to keep a history of changes that you can refer to whenever an unexpected breaking change is introduced that needs to be rolled back.  This also applies to SQL where changes to Stored Procedures, Views, and other objects in the database can result in unintended side effects down the road.  If we can place our SQL objects into git, then we can keep track of change history, approve changes to our production environment, and run tests to ensure the changes will not immediately break our workflows.
